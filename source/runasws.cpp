@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "runasws.h"
 
 #include <string>
