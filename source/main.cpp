@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include <stdlib.h>
+
 #include "runasws.h"
-#include <winerror.h>
 
 int wmain()
 {
