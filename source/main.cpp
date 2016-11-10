@@ -1,10 +1,6 @@
-// RunAsWorkstation.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
-
 #include <stdlib.h>
-#include "runasworkstation.h"
+#include "runasws.h"
 #include <winerror.h>
 
 int wmain()
@@ -17,4 +13,3 @@ int wmain()
 
   return run();
 }
-

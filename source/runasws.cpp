@@ -1,4 +1,4 @@
-#include "runasworkstation.h"
+#include "runasws.h"
 
 #include <string>
 #include <vector>
@@ -55,7 +55,7 @@ DWORD injectLibrary(HANDLE process)
     return ERROR_PATH_NOT_FOUND;
   }
   *(lastSlash + 1) = 0;
-  wcscat_s(filePath, _countof(filePath),  L"runaswshook.dll");
+  wcscat_s(filePath, _countof(filePath),  L"RunAsWsHook.dll");
 
   auto memory = VirtualAllocEx(process, nullptr, (wcslen(filePath) + 1) * sizeof(WCHAR), MEM_COMMIT, PAGE_READWRITE);
   if (!memory)
