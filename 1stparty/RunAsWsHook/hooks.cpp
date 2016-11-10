@@ -1,8 +1,58 @@
 #include "stdafx.h"
 #include "hooks.h"
 
+#include "../inject/inject.h"
+
+CreateProcessAType g_createProcessA     = nullptr;
+CreateProcessWType g_createProcessW     = nullptr;
 RegQueryValueExAType g_regQueryValueExA = nullptr;
 RegQueryValueExWType g_regQueryValueExW = nullptr;
+
+extern HMODULE g_module;
+
+BOOL WINAPI hook_CreateProcessA(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCTSTR lpCurrentDirectory, LPSTARTUPINFO lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation)
+{
+  auto suspended = dwCreationFlags & CREATE_SUSPENDED;
+  if (!suspended)
+  {
+    dwCreationFlags |= CREATE_SUSPENDED;
+  }
+
+  auto ok = g_createProcessA(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+  if (ok)
+  {
+    inject(g_module, lpProcessInformation->hProcess);
+
+    if (!suspended)
+    {
+      ResumeThread(lpProcessInformation->hThread);
+    }
+  }
+
+  return ok;
+}
+
+BOOL WINAPI hook_CreateProcessW(LPCWSTR lpApplicationName, LPWSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCTSTR lpCurrentDirectory, LPSTARTUPINFO lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation)
+{
+  auto suspended = dwCreationFlags & CREATE_SUSPENDED;
+  if (!suspended)
+  {
+    dwCreationFlags |= CREATE_SUSPENDED;
+  }
+
+  auto ok = g_createProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+  if (ok)
+  {
+    inject(g_module, lpProcessInformation->hProcess);
+
+    if (!suspended)
+    {
+      ResumeThread(lpProcessInformation->hThread);
+    }
+  }
+
+  return ok;
+}
 
 LONG WINAPI hook_RegQueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 {

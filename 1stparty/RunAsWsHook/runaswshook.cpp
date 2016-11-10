@@ -5,6 +5,7 @@
 #include <mhook-lib/mhook.h>
 
 HMODULE g_advapi32dll = nullptr;
+HMODULE g_kernel32dll = nullptr;
 
 void hook(PVOID *systemFunction, PVOID hookFunction)
 {
@@ -27,10 +28,15 @@ void installHooks()
   {
     return;
   }
+  g_kernel32dll = GetModuleHandle(L"kernel32.dll");
 
+  g_createProcessA   = reinterpret_cast<CreateProcessAType>  (GetProcAddress(g_kernel32dll, "CreateProcessA"));
+  g_createProcessW   = reinterpret_cast<CreateProcessWType>  (GetProcAddress(g_kernel32dll, "CreateProcessW"));
   g_regQueryValueExA = reinterpret_cast<RegQueryValueExAType>(GetProcAddress(g_advapi32dll, "RegQueryValueExA"));
   g_regQueryValueExW = reinterpret_cast<RegQueryValueExWType>(GetProcAddress(g_advapi32dll, "RegQueryValueExW"));
 
+  hook(reinterpret_cast<PVOID *>(&g_createProcessA),   hook_CreateProcessA);
+  hook(reinterpret_cast<PVOID *>(&g_createProcessW),   hook_CreateProcessW);
   hook(reinterpret_cast<PVOID *>(&g_regQueryValueExA), hook_RegQueryValueExA);
   hook(reinterpret_cast<PVOID *>(&g_regQueryValueExW), hook_RegQueryValueExW);
 }
@@ -50,17 +56,20 @@ void unhook(PVOID *hookedFunction)
   }
 
   Mhook_Unhook(hookedFunction);
+  *hookedFunction = nullptr;
 }
 
 void uninstallHooks()
 {
-  if (!g_advapi32dll)
-  {
-    return;
-  }
-
-  unhook(reinterpret_cast<PVOID *>(&g_regQueryValueExA));
   unhook(reinterpret_cast<PVOID *>(&g_regQueryValueExW));
+  unhook(reinterpret_cast<PVOID *>(&g_regQueryValueExA));
+  unhook(reinterpret_cast<PVOID *>(&g_createProcessW));
+  unhook(reinterpret_cast<PVOID *>(&g_createProcessA));
 
-  FreeLibrary(g_advapi32dll);
+  g_kernel32dll = nullptr;
+  if (g_advapi32dll)
+  {
+    FreeLibrary(g_advapi32dll);
+    g_advapi32dll = nullptr;
+  }
 }

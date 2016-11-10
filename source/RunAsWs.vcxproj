@@ -159,6 +159,11 @@
     <ClCompile Include="runasws.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\1stparty\inject\inject.vcxproj">
+      <Project>{407d2d0c-3970-4e6e-a9b2-0ad098ba1d55}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
