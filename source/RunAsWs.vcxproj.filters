@@ -21,7 +21,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="runasworkstation.h">
+    <ClInclude Include="runasws.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="runasworkstation.cpp">
+    <ClCompile Include="runasws.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
