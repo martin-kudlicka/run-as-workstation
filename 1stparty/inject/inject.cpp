@@ -6,7 +6,7 @@
 DWORD inject(HMODULE module, HANDLE process)
 {
   WCHAR filePath[MAX_PATH];
-  auto chars = GetModuleFileName(nullptr, filePath, _countof(filePath));
+  auto chars = GetModuleFileName(module, filePath, _countof(filePath));
   if (chars == 0)
   {
     return GetLastError();
