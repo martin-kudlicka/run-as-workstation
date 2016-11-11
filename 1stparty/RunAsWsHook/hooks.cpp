@@ -5,6 +5,8 @@
 
 CreateProcessAType g_createProcessA     = nullptr;
 CreateProcessWType g_createProcessW     = nullptr;
+GetVersionExAType g_getVersionExA       = nullptr;
+GetVersionExWType g_getVersionExW       = nullptr;
 RegQueryValueExAType g_regQueryValueExA = nullptr;
 RegQueryValueExWType g_regQueryValueExW = nullptr;
 
@@ -48,6 +50,36 @@ BOOL WINAPI hook_CreateProcessW(LPCWSTR lpApplicationName, LPWSTR lpCommandLine,
     if (!suspended)
     {
       ResumeThread(lpProcessInformation->hThread);
+    }
+  }
+
+  return ok;
+}
+
+BOOL WINAPI hook_GetVersionExA(LPOSVERSIONINFO lpVersionInfo)
+{
+  auto ok = g_getVersionExA(lpVersionInfo);
+  if (ok)
+  {
+    if (lpVersionInfo->dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
+    {
+      auto osVersionInfoEx          = reinterpret_cast<LPOSVERSIONINFOEX>(lpVersionInfo);
+      osVersionInfoEx->wProductType = VER_NT_WORKSTATION;
+    }
+  }
+
+  return ok;
+}
+
+BOOL WINAPI hook_GetVersionExW(LPOSVERSIONINFO lpVersionInfo)
+{
+  auto ok = g_getVersionExW(lpVersionInfo);
+  if (ok)
+  {
+    if (lpVersionInfo->dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
+    {
+      auto osVersionInfoEx          = reinterpret_cast<LPOSVERSIONINFOEX>(lpVersionInfo);
+      osVersionInfoEx->wProductType = VER_NT_WORKSTATION;
     }
   }
 
