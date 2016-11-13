@@ -21,33 +21,34 @@ void hook(PVOID *systemFunction, PVOID hookFunction)
   }
 }
 
-void installHooks()
+void hookNow()
 {
-  g_advapi32dll = LoadLibrary(L"Advapi32.dll");
-  if (!g_advapi32dll)
-  {
-    return;
-  }
   g_kernel32dll = GetModuleHandle(L"kernel32.dll");
 
-  g_createProcessA   = reinterpret_cast<CreateProcessAType>  (GetProcAddress(g_kernel32dll, "CreateProcessA"));
-  g_createProcessW   = reinterpret_cast<CreateProcessWType>  (GetProcAddress(g_kernel32dll, "CreateProcessW"));
-  g_getVersionExA    = reinterpret_cast<GetVersionExAType>   (GetProcAddress(g_kernel32dll, "GetVersionExA"));
-  g_getVersionExW    = reinterpret_cast<GetVersionExWType>   (GetProcAddress(g_kernel32dll, "GetVersionExW"));
-  g_regQueryValueExA = reinterpret_cast<RegQueryValueExAType>(GetProcAddress(g_advapi32dll, "RegQueryValueExA"));
-  g_regQueryValueExW = reinterpret_cast<RegQueryValueExWType>(GetProcAddress(g_advapi32dll, "RegQueryValueExW"));
+  g_createProcessA = reinterpret_cast<CreateProcessAType>(GetProcAddress(g_kernel32dll, "CreateProcessA"));
+  g_createProcessW = reinterpret_cast<CreateProcessWType>(GetProcAddress(g_kernel32dll, "CreateProcessW"));
+  g_getVersionExA  = reinterpret_cast<GetVersionExAType> (GetProcAddress(g_kernel32dll, "GetVersionExA"));
+  g_getVersionExW  = reinterpret_cast<GetVersionExWType> (GetProcAddress(g_kernel32dll, "GetVersionExW"));
 
-  hook(reinterpret_cast<PVOID *>(&g_createProcessA),   hook_CreateProcessA);
-  hook(reinterpret_cast<PVOID *>(&g_createProcessW),   hook_CreateProcessW);
-  hook(reinterpret_cast<PVOID *>(&g_getVersionExA),    hook_GetVersionExA);
-  hook(reinterpret_cast<PVOID *>(&g_getVersionExW),    hook_GetVersionExW);
-  hook(reinterpret_cast<PVOID *>(&g_regQueryValueExA), hook_RegQueryValueExA);
-  hook(reinterpret_cast<PVOID *>(&g_regQueryValueExW), hook_RegQueryValueExW);
+  hook(reinterpret_cast<PVOID *>(&g_createProcessA), hook_CreateProcessA);
+  hook(reinterpret_cast<PVOID *>(&g_createProcessW), hook_CreateProcessW);
+  hook(reinterpret_cast<PVOID *>(&g_getVersionExA),  hook_GetVersionExA);
+  hook(reinterpret_cast<PVOID *>(&g_getVersionExW),  hook_GetVersionExW);
 }
 
 unsigned __stdcall hookThread(LPVOID arguments)
 {
-  installHooks();
+  g_advapi32dll = LoadLibrary(L"Advapi32.dll");
+  if (!g_advapi32dll)
+  {
+    return GetLastError();
+  }
+
+  g_regQueryValueExA = reinterpret_cast<RegQueryValueExAType>(GetProcAddress(g_advapi32dll, "RegQueryValueExA"));
+  g_regQueryValueExW = reinterpret_cast<RegQueryValueExWType>(GetProcAddress(g_advapi32dll, "RegQueryValueExW"));
+
+  hook(reinterpret_cast<PVOID *>(&g_regQueryValueExA), hook_RegQueryValueExA);
+  hook(reinterpret_cast<PVOID *>(&g_regQueryValueExW), hook_RegQueryValueExW);
 
   return ERROR_SUCCESS;
 }

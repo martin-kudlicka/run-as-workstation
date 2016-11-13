@@ -11,6 +11,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 	{
 	  case DLL_PROCESS_ATTACH:
       g_module = hModule;
+      hookNow();
       _beginthreadex(nullptr, 0, &hookThread, nullptr, 0, nullptr);
       break;
 	  case DLL_PROCESS_DETACH:
