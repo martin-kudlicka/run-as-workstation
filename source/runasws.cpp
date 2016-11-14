@@ -70,7 +70,14 @@ DWORD run()
     return GetLastError();
   }
 
-  auto error = injectLibrary(processInformation.hProcess);
+  auto injectEvent = createInjectEvent(processInformation.dwProcessId);
+  auto error       = injectLibrary(processInformation.hProcess);
+
+  if (injectEvent)
+  {
+    WaitForSingleObject(injectEvent, INFINITE);
+    CloseHandle(injectEvent);
+  }
 
   ResumeThread(processInformation.hThread);
 

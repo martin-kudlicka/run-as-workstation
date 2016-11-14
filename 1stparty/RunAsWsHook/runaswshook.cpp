@@ -3,6 +3,7 @@
 
 #include "hooks.h"
 #include <mhook-lib/mhook.h>
+#include "../../1stparty/inject/inject.h"
 
 HMODULE g_advapi32dll = nullptr;
 HMODULE g_kernel32dll = nullptr;
@@ -38,19 +39,33 @@ void hookNow()
 
 unsigned __stdcall hookThread(LPVOID arguments)
 {
-  g_advapi32dll = LoadLibrary(L"Advapi32.dll");
-  if (!g_advapi32dll)
+  auto injectEvent = openInjectEvent(GetCurrentProcessId());
+
+  DWORD error = ERROR_SUCCESS;
+
+  do
   {
-    return GetLastError();
+    g_advapi32dll = LoadLibrary(L"Advapi32.dll");
+    if (!g_advapi32dll)
+    {
+      error = GetLastError();
+      break;
+    }
+
+    g_regQueryValueExA = reinterpret_cast<RegQueryValueExAType>(GetProcAddress(g_advapi32dll, "RegQueryValueExA"));
+    g_regQueryValueExW = reinterpret_cast<RegQueryValueExWType>(GetProcAddress(g_advapi32dll, "RegQueryValueExW"));
+
+    hook(reinterpret_cast<PVOID *>(&g_regQueryValueExA), hook_RegQueryValueExA);
+    hook(reinterpret_cast<PVOID *>(&g_regQueryValueExW), hook_RegQueryValueExW);
+  }
+  while (false);
+
+  if (injectEvent)
+  {
+    SetEvent(injectEvent);
   }
 
-  g_regQueryValueExA = reinterpret_cast<RegQueryValueExAType>(GetProcAddress(g_advapi32dll, "RegQueryValueExA"));
-  g_regQueryValueExW = reinterpret_cast<RegQueryValueExWType>(GetProcAddress(g_advapi32dll, "RegQueryValueExW"));
-
-  hook(reinterpret_cast<PVOID *>(&g_regQueryValueExA), hook_RegQueryValueExA);
-  hook(reinterpret_cast<PVOID *>(&g_regQueryValueExW), hook_RegQueryValueExW);
-
-  return ERROR_SUCCESS;
+  return error;
 }
 
 void unhook(PVOID *hookedFunction)

@@ -12,6 +12,8 @@ RegQueryValueExWType g_regQueryValueExW = nullptr;
 
 extern HMODULE g_module;
 
+void injectAndWait(const LPPROCESS_INFORMATION processInformation);
+
 BOOL WINAPI hook_CreateProcessA(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCTSTR lpCurrentDirectory, LPSTARTUPINFO lpStartupInfo, LPPROCESS_INFORMATION lpProcessInformation)
 {
   auto suspended = dwCreationFlags & CREATE_SUSPENDED;
@@ -23,7 +25,7 @@ BOOL WINAPI hook_CreateProcessA(LPCSTR lpApplicationName, LPSTR lpCommandLine, L
   auto ok = g_createProcessA(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
   if (ok)
   {
-    inject(g_module, lpProcessInformation->hProcess);
+    injectAndWait(lpProcessInformation);
 
     if (!suspended)
     {
@@ -45,7 +47,7 @@ BOOL WINAPI hook_CreateProcessW(LPCWSTR lpApplicationName, LPWSTR lpCommandLine,
   auto ok = g_createProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
   if (ok)
   {
-    inject(g_module, lpProcessInformation->hProcess);
+    injectAndWait(lpProcessInformation);
 
     if (!suspended)
     {
@@ -114,4 +116,16 @@ LONG WINAPI hook_RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpRese
   }
 
   return error;
+}
+
+void injectAndWait(const LPPROCESS_INFORMATION processInformation)
+{
+  auto injectEvent = createInjectEvent(processInformation->dwProcessId);
+  inject(g_module, processInformation->hProcess);
+
+  if (injectEvent)
+  {
+    WaitForSingleObject(injectEvent, INFINITE);
+    CloseHandle(injectEvent);
+  }
 }
