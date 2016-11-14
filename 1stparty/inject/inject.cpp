@@ -2,6 +2,14 @@
 #include "inject.h"
 
 #include <stdlib.h>
+#include <string>
+
+std::wstring injectEventName(DWORD id);
+
+HANDLE createInjectEvent(DWORD id)
+{
+  return CreateEvent(nullptr, TRUE, FALSE, injectEventName(id).c_str());
+}
 
 DWORD inject(HMODULE module, HANDLE process)
 {
@@ -62,4 +70,17 @@ DWORD inject(LPCWSTR filePath, HANDLE process)
   }
 
   return error;
+}
+
+std::wstring injectEventName(DWORD id)
+{
+  WCHAR buffer[32] = { 0 };
+  wsprintf(buffer, L"RunAsWsHook_%d", id);
+
+  return buffer;
+}
+
+HANDLE openInjectEvent(DWORD id)
+{
+  return OpenEvent(EVENT_MODIFY_STATE, FALSE, injectEventName(id).c_str());
 }
