@@ -89,5 +89,7 @@ DWORD run()
 
 void showHelp()
 {
-  // TODO
+  wprintf(L"RunAsWs.exe \"application\" [arguments]\n\n");
+  wprintf(L"application\tfile path to application to execute\n");
+  wprintf(L"arguments\toptional arguments to pass to application\n");
 }
