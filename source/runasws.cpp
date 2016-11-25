@@ -89,6 +89,7 @@ DWORD run()
 
 void showHelp()
 {
+  wprintf(L"Run As Workstation 1.0\n\n");
   wprintf(L"RunAsWs.exe \"application\" [arguments]\n\n");
   wprintf(L"application\tfile path to application to execute\n");
   wprintf(L"arguments\toptional arguments to pass to application\n");
