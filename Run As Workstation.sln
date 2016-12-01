@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunAsWs", "source\RunAsWs.v
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1stparty", "1stparty", "{6C5B0909-B212-4836-8A3B-1678FDD0BF74}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunAsWsHook", "1stparty\RunAsWsHook\RunAsWsHook.vcxproj", "{33F58F1D-4B8B-4424-A7ED-7C3E29DB4CFD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunAsWs Hook", "1stparty\RunAsWs Hook\RunAsWsHook.vcxproj", "{33F58F1D-4B8B-4424-A7ED-7C3E29DB4CFD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inject", "1stparty\inject\inject.vcxproj", "{407D2D0C-3970-4E6E-A9B2-0AD098BA1D55}"
 EndProject
