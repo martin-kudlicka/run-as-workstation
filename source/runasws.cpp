@@ -8,7 +8,7 @@
 PROCESS_INFORMATION executeSuspended()
 {
   std::wstring commandLine;
-  for (auto index = 1; index < __argc; index++)
+  for (auto index = 1; index < __argc; ++index)
   {
     if (!commandLine.empty())
     {
