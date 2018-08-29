@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "../1stparty/inject/inject.h"
+#include <MkInject/MInject>
 
 PROCESS_INFORMATION executeSuspended()
 {
@@ -30,9 +30,9 @@ PROCESS_INFORMATION executeSuspended()
 
   std::vector<WCHAR> cmdBuffer(commandLine.length() + 1);
   wcscpy_s(cmdBuffer.data(), cmdBuffer.size(), commandLine.c_str());
-  STARTUPINFO startupInfo                = { 0 };
+  STARTUPINFO startupInfo                = {};
   startupInfo.cb                         = sizeof(startupInfo);
-  PROCESS_INFORMATION processInformation = { 0 };
+  PROCESS_INFORMATION processInformation = {};
   auto ok                                = CreateProcess(nullptr, cmdBuffer.data(), nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &startupInfo, &processInformation);
   if (!ok)
   {
@@ -59,7 +59,7 @@ DWORD injectLibrary(HANDLE process)
   *(lastSlash + 1) = 0;
   wcscat_s(filePath, _countof(filePath), L"RunAsWsHook.dll");
 
-  return inject(filePath, process);
+  return MInject::inject(filePath, process);
 }
 
 DWORD run()
@@ -70,7 +70,7 @@ DWORD run()
     return GetLastError();
   }
 
-  auto injectEvent = createInjectEvent(processInformation.dwProcessId);
+  auto injectEvent = MInject::createInjectEvent(processInformation.dwProcessId);
   auto error       = injectLibrary(processInformation.hProcess);
 
   if (injectEvent)

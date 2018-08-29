@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "hooks.h"
 
-#include "../inject/inject.h"
+#include <MkInject/MInject>
 
 CreateProcessAType g_createProcessA     = nullptr;
 CreateProcessWType g_createProcessW     = nullptr;
@@ -120,8 +120,8 @@ LONG WINAPI hook_RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpRese
 
 void injectAndWait(const LPPROCESS_INFORMATION processInformation)
 {
-  auto injectEvent = createInjectEvent(processInformation->dwProcessId);
-  inject(g_module, processInformation->hProcess);
+  auto injectEvent = MInject::createInjectEvent(processInformation->dwProcessId);
+  MInject::inject(g_module, processInformation->hProcess);
 
   if (injectEvent)
   {
