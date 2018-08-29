@@ -3,7 +3,7 @@
 
 #include "hooks.h"
 #include <mhook-lib/mhook.h>
-#include "../../1stparty/inject/inject.h"
+#include <MkInject/MInject>
 
 HMODULE g_advapi32dll = nullptr;
 HMODULE g_kernel32dll = nullptr;
@@ -39,7 +39,7 @@ void hookNow()
 
 unsigned __stdcall hookThread(LPVOID arguments)
 {
-  auto injectEvent = openInjectEvent(GetCurrentProcessId());
+  auto injectEvent = MInject::openInjectEvent(GetCurrentProcessId());
 
   DWORD error = ERROR_SUCCESS;
 
