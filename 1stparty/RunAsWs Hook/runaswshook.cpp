@@ -39,6 +39,8 @@ void hookNow()
 
 unsigned __stdcall hookThread(LPVOID arguments)
 {
+  UNREFERENCED_PARAMETER(arguments);
+
   auto injectEvent = MInject::openInjectEvent(GetCurrentProcessId());
 
   DWORD error = ERROR_SUCCESS;

@@ -96,7 +96,7 @@ LONG WINAPI hook_RegQueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReser
     if (strcmp(lpValueName, "ProductType") == 0 && strcmp(reinterpret_cast<char *>(lpData), "ServerNT") == 0)
     {
       strcpy_s(reinterpret_cast<char *>(lpData), *lpcbData, "WinNT");
-      *lpcbData = strlen("WinNT") + 1;
+      *lpcbData = static_cast<DWORD>(strlen("WinNT") + 1);
     }
   }
 
@@ -111,7 +111,7 @@ LONG WINAPI hook_RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpRese
     if (wcscmp(lpValueName, L"ProductType") == 0 && wcscmp(reinterpret_cast<wchar_t *>(lpData), L"ServerNT") == 0)
     {
       wcscpy_s(reinterpret_cast<wchar_t *>(lpData), *lpcbData, L"WinNT");
-      *lpcbData = (wcslen(L"WinNT") + 1) * sizeof(WCHAR);
+      *lpcbData = static_cast<DWORD>((wcslen(L"WinNT") + 1) * sizeof(WCHAR));
     }
   }
 
