@@ -10,7 +10,7 @@ Run As Workstation catches wProductType of GetVersionEx WinAPI call and changes 
 
 ## Requirements
 * Windows Server 2008
-* [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/download/details.aspx?id=48145)
+* [Visual C++ Redistributable for Visual Studio 2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 
 ## Components
 * [mhook](https://github.com/martona/mhook)
